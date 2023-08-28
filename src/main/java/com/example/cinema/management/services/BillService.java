@@ -4,6 +4,7 @@ import com.example.cinema.management.dto.BillRequestDTO;
 import com.example.cinema.management.dto.BillResponseDTO;
 import com.example.cinema.management.model.Bill;
 import com.example.cinema.management.model.Message;
+import com.example.cinema.management.paypal.dto.BillPayPalRequestDTO;
 
 import java.util.List;
 
@@ -15,4 +16,6 @@ public interface BillService {
     BillResponseDTO checkExpireBill(BillRequestDTO billRequestDTO);
     double caculatedPrice(Bill bill);
     BillResponseDTO getBillByCode(String code);
+    Bill createBillPayPal(BillPayPalRequestDTO billPayPalRequestDTO);
+    Bill updateBill(Bill bill);
 }

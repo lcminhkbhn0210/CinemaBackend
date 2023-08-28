@@ -1,10 +1,13 @@
 package com.example.cinema.management.paypal.controllers;
 
 import com.example.cinema.management.dto.BillResponseDTO;
+import com.example.cinema.management.model.Bill;
 import com.example.cinema.management.paypal.dto.BillDTO;
+import com.example.cinema.management.paypal.dto.BillPayPalRequestDTO;
 import com.example.cinema.management.paypal.dto.BillResponsePayPalDTO;
 import com.example.cinema.management.paypal.services.PayPalService;
 import com.example.cinema.management.repositories.BillRepository;
+import com.example.cinema.management.services.BillService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,16 +22,16 @@ import java.io.IOException;
 public class PayPalController {
 
     private final PayPalService payPalService;
-    private final BillRepository billRepository;
+
 
     @PostMapping("/payment")
-    public ResponseEntity<BillResponsePayPalDTO> paymentByPayPal(@RequestBody BillDTO billDTO) throws IOException, InterruptedException {
-        return new ResponseEntity<>(payPalService.createBill(billDTO), HttpStatus.CREATED);
+    public ResponseEntity<BillResponsePayPalDTO> paymentByPayPal(@RequestBody BillPayPalRequestDTO billPayPalRequestDTO) throws IOException, InterruptedException {
+        return new ResponseEntity<>(payPalService.createBill(billPayPalRequestDTO), HttpStatus.CREATED);
     }
 
-    @GetMapping("/success")
+    @PutMapping("/success")
     public ResponseEntity<BillResponseDTO> paymentSuccess(HttpServletRequest request){
-        System.out.println(request.getParameter("token"));
+
         return null;
     }
 }

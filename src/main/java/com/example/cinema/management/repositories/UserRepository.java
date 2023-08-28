@@ -25,4 +25,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
     User findByVerificationCode(String code);
     @Query(value = "SELECT * FROM tbl_user WHERE id = ?", nativeQuery = true)
     Optional<Customer> findCustomerById(@Param("id") long id);
+
+    @Query(value = "SELECT * FROM tbl_user WHERE username = ?", nativeQuery = true)
+    Optional<Customer> findCustomerByUsername(@Param("username") String username);
 }

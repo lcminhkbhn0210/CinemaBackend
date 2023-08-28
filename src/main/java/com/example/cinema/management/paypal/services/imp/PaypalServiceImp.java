@@ -1,15 +1,19 @@
 package com.example.cinema.management.paypal.services.imp;
 
 import com.example.cinema.management.config.PaypalConfig;
+import com.example.cinema.management.model.Bill;
 import com.example.cinema.management.paypal.dto.BillDTO;
+import com.example.cinema.management.paypal.dto.BillPayPalRequestDTO;
 import com.example.cinema.management.paypal.dto.BillResponsePayPalDTO;
 import com.example.cinema.management.paypal.dto.PayPalAccessTokenResponseDTO;
 import com.example.cinema.management.paypal.model.PayPalApplicationContext;
 import com.example.cinema.management.paypal.model.PaymentLandingPage;
 import com.example.cinema.management.paypal.model.PurchaseUnit;
 import com.example.cinema.management.paypal.services.PayPalService;
+import com.example.cinema.management.services.BillService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -33,6 +37,8 @@ public class PaypalServiceImp implements PayPalService {
     private final HttpClient httpClient;
     private final PaypalConfig paypalConfig;
     private final ObjectMapper objectMapper;
+    @Autowired
+    private BillService billService;
 
     public PaypalServiceImp(PaypalConfig paypalConfig, ObjectMapper objectMapper){
         this.paypalConfig = paypalConfig;
@@ -57,8 +63,10 @@ public class PaypalServiceImp implements PayPalService {
     }
 
     @Override
-    public BillResponsePayPalDTO createBill(BillDTO billDTO) throws IOException, InterruptedException {
+    public BillResponsePayPalDTO createBill(BillPayPalRequestDTO billPayPalRequestDTO) throws IOException, InterruptedException {
         PayPalAccessTokenResponseDTO accessToken = getAccessToken();
+        Bill bill = billService.createBillPayPal(billPayPalRequestDTO);
+        BillDTO billDTO = BillDTO.toBillDTO(bill);
         billDTO.setApplicationContext(createAppContext());
         List<PurchaseUnit> purchaseUnits = billDTO.getPurchaseUnits();
         for (PurchaseUnit purchaseUnit:purchaseUnits){
@@ -74,7 +82,11 @@ public class PaypalServiceImp implements PayPalService {
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         String content = response.body();
-        return objectMapper.readValue(content, BillResponsePayPalDTO.class);
+        BillResponsePayPalDTO billResponsePayPalDTO = objectMapper.readValue(content, BillResponsePayPalDTO.class);
+        bill.setPaypalOrderId(billResponsePayPalDTO.getId());
+        bill.setPaypalOrderStatus("Chua thanh toan");
+        billService.updateBill(bill);
+        return billResponsePayPalDTO;
     }
 
     private String encodeBasicCredentials() {
