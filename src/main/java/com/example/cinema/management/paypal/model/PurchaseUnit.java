@@ -28,4 +28,20 @@ public class PurchaseUnit {
 
     @JsonProperty(value = "payee")
     private Payee payee;
+
+    public double totalUnitMoney(){
+        double sum = 0;
+        for(int i=0; i<items.size();i++){
+           sum = sum +  Double.parseDouble(items.get(i).getUnitMoneyDTO().getValue());
+        }
+        return sum;
+    }
+
+    public  double totalTaxMoney(){
+        double sum = 0;
+        for(int i=0; i<items.size();i++){
+            sum = sum +  Double.parseDouble(items.get(i).getTax().getValue());
+        }
+        return sum;
+    }
 }

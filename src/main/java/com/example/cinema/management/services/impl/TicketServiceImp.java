@@ -1,12 +1,11 @@
 package com.example.cinema.management.services.impl;
 
+import com.example.cinema.management.config.TicketConfig;
 import com.example.cinema.management.dto.TicketResponseDTO;
-import com.example.cinema.management.model.FilmRoomChair;
-import com.example.cinema.management.model.ShowTimes;
-import com.example.cinema.management.model.Ticket;
-import com.example.cinema.management.model.TypeRoomChair;
+import com.example.cinema.management.model.*;
 import com.example.cinema.management.repositories.TicketRepository;
 import com.example.cinema.management.services.TicketService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -17,18 +16,22 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@RequiredArgsConstructor
 public class TicketServiceImp implements TicketService {
+
     @Autowired
     private TicketRepository ticketRepository;
+    private final TicketConfig ticketConfig;
+
     @Override
     public List<Ticket> createTicketByShowTimes(ShowTimes showTimes) {
         List<Ticket> tickets = new ArrayList<>();
         for(FilmRoomChair filmRoomChair:showTimes.getFilmRoom().getFilmRoomChairList()){
-            double price = 60000;
-            String des = "Ve thuong";
+            double price = ticketConfig.getPriceNormal();
+            String des = TypeRoomChair.NORMAL.name();
             if(filmRoomChair.getType().equals(TypeRoomChair.VIP)) {
-                price = 75000;
-                des = "Ve Vip";
+                price = ticketConfig.getPriceVip();
+                des = TypeRoomChair.VIP.name();
             }
             Ticket ticket = Ticket.builder()
                     .showTimes(showTimes)
@@ -100,7 +103,6 @@ public class TicketServiceImp implements TicketService {
     @Override
     public void unBlockTicket(List<Ticket> tickets) throws InterruptedException {
         Thread.sleep(10000);
-        System.out.println(Thread.currentThread().getName());
         for (Ticket ticket:tickets){
             ticketRepository.updateUnStatus(ticket.getId());
         }

@@ -159,11 +159,11 @@ public class BillServiceImp implements BillService {
         if(bill.getTicketList().size()!=0) bill.setExpire(bill.getTicketList().get(0).getShowTimes().getTimeend());
         if(billPayPalRequestDTO.getUserAccount()!=null) bill.setCustomer(userRepository.findCustomerByUsername(billPayPalRequestDTO.getUserAccount()).get());
         bill.setVerification_code(verification_code);
-        return billRepository.save(bill);
+        return bill;
     }
 
     @Override
     public Bill updateBill(Bill bill) {
-        return billRepository.save(bill);
+        return bill;
     }
 }
