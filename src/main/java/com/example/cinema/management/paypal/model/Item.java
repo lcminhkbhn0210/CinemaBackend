@@ -3,6 +3,7 @@ package com.example.cinema.management.paypal.model;
 import com.example.cinema.management.model.BuyProduct;
 import com.example.cinema.management.model.Ticket;
 import com.example.cinema.management.paypal.config.MoneyConfig;
+import com.example.cinema.management.paypal.dto.CurencyConverter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,11 +43,11 @@ public class Item {
                     .quantity("1")
                     .unitMoneyDTO(MoneyDTO.builder()
                             .currencyCode(moneyConfig.getCurrency())
-                            .value(String.valueOf(ticket.getPrice()*(1-moneyConfig.getFee())))
+                            .value(CurencyConverter.vndToUSD(ticket.getPrice() * (1-moneyConfig.getFee()),moneyConfig))
                             .build())
                     .tax(MoneyDTO.builder()
                             .currencyCode(moneyConfig.getCurrency())
-                            .value(String.valueOf(ticket.getPrice()* moneyConfig.getFee()))
+                            .value(CurencyConverter.vndToUSD(ticket.getPrice() * moneyConfig.getFee(), moneyConfig))
                             .build())
                     .build();
             items.add(item);
@@ -56,11 +59,11 @@ public class Item {
                     .quantity(String.valueOf(buyProduct.getAmount()))
                     .unitMoneyDTO(MoneyDTO.builder()
                             .currencyCode(moneyConfig.getCurrency())
-                            .value(String.valueOf(buyProduct.getSellProduct().getPrice() * (1-moneyConfig.getFee())))
+                            .value(new BigDecimal(CurencyConverter.vndToUSD(buyProduct.getSellProduct().getPrice() * (1-moneyConfig.getFee()),moneyConfig)).setScale(2, RoundingMode.CEILING).toString())
                             .build())
                     .tax(MoneyDTO.builder()
                             .currencyCode(moneyConfig.getCurrency())
-                            .value(String.valueOf(buyProduct.getSellProduct().getPrice() * moneyConfig.getFee()))
+                            .value(new BigDecimal(CurencyConverter.vndToUSD(buyProduct.getSellProduct().getPrice() * moneyConfig.getFee(),moneyConfig)).setScale(2,RoundingMode.DOWN).toString())
                             .build())
                     .build();
             items.add(item);

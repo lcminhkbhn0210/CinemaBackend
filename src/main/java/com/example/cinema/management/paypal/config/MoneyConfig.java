@@ -14,5 +14,5 @@ public class MoneyConfig {
     @NotEmpty
     private double fee;
     @NotEmpty
-    private double transToUSD;
+    private String transToUSD;
 }

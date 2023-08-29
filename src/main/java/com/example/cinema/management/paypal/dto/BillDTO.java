@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,25 +33,25 @@ public class BillDTO {
 
 
     public static BillDTO toBillDTO(Bill bill, MoneyConfig moneyConfig){
-        Amount amount = Amount.builder()
-                .currencyCode(moneyConfig.getCurrency())
-                .value(String.valueOf(bill.getTotal()))
-                .breakDown(BreakDown.builder()
-                        .itemTotal(MoneyDTO.builder()
-                                .currencyCode(moneyConfig.getCurrency())
-                                .value(String.valueOf(bill.getTotal()*(1-moneyConfig.getFee())))
-                                .build())
-                        .taxTotal(MoneyDTO.builder()
-                                .currencyCode(moneyConfig.getCurrency())
-                                .value(String.valueOf(bill.getTotal()* moneyConfig.getFee()))
-                                .build())
-                        .build())
-                .build();
         PurchaseUnit purchaseUnit = PurchaseUnit.builder()
-                .amount(amount)
                 .items(Item.toListItem(bill.getTicketList(), bill.getBuyProducts(), moneyConfig))
                 .referenceId(bill.getVerification_code())
                 .build();
+        Amount amount = Amount.builder()
+                .currencyCode(moneyConfig.getCurrency())
+                .value(CurencyConverter.vndToUSD(bill.getTotal(), moneyConfig))
+                .breakDown(BreakDown.builder()
+                        .itemTotal(MoneyDTO.builder()
+                                .currencyCode(moneyConfig.getCurrency())
+                                .value(purchaseUnit.totalUnitMoney())
+                                .build())
+                        .taxTotal(MoneyDTO.builder()
+                                .currencyCode(moneyConfig.getCurrency())
+                                .value(purchaseUnit.totalTaxMoney())
+                                .build())
+                        .build())
+                .build();
+        purchaseUnit.setAmount(amount);
         List<PurchaseUnit> purchaseUnitList = new ArrayList<>();
         purchaseUnitList.add(purchaseUnit);
         return BillDTO.builder()

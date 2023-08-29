@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -29,19 +30,23 @@ public class PurchaseUnit {
     @JsonProperty(value = "payee")
     private Payee payee;
 
-    public double totalUnitMoney(){
-        double sum = 0;
-        for(int i=0; i<items.size();i++){
-           sum = sum +  Double.parseDouble(items.get(i).getUnitMoneyDTO().getValue());
+    public String totalUnitMoney(){
+        BigDecimal bigDecimal = new BigDecimal("0");
+        for(Item item:items){
+            BigDecimal bigDecimal1 = new BigDecimal(item.getUnitMoneyDTO().getValue());
+            bigDecimal1 = bigDecimal1.multiply(new BigDecimal(item.getQuantity()));
+            bigDecimal = bigDecimal.add(bigDecimal1);
         }
-        return sum;
+        return bigDecimal.stripTrailingZeros().toString();
     }
 
-    public  double totalTaxMoney(){
-        double sum = 0;
-        for(int i=0; i<items.size();i++){
-            sum = sum +  Double.parseDouble(items.get(i).getTax().getValue());
+    public String totalTaxMoney(){
+        BigDecimal bigDecimal = new BigDecimal("0");
+        for(Item item:items){
+            BigDecimal bigDecimal1 = new BigDecimal(item.getTax().getValue());
+            bigDecimal1 = bigDecimal1.multiply(new BigDecimal(item.getQuantity()));
+            bigDecimal = bigDecimal.add(bigDecimal1);
         }
-        return sum;
+        return bigDecimal.stripTrailingZeros().toString();
     }
 }
