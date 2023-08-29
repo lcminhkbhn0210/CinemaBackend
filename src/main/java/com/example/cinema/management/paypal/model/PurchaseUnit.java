@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -28,4 +29,24 @@ public class PurchaseUnit {
 
     @JsonProperty(value = "payee")
     private Payee payee;
+
+    public String totalUnitMoney(){
+        BigDecimal bigDecimal = new BigDecimal("0");
+        for(Item item:items){
+            BigDecimal bigDecimal1 = new BigDecimal(item.getUnitMoneyDTO().getValue());
+            bigDecimal1 = bigDecimal1.multiply(new BigDecimal(item.getQuantity()));
+            bigDecimal = bigDecimal.add(bigDecimal1);
+        }
+        return bigDecimal.stripTrailingZeros().toString();
+    }
+
+    public String totalTaxMoney(){
+        BigDecimal bigDecimal = new BigDecimal("0");
+        for(Item item:items){
+            BigDecimal bigDecimal1 = new BigDecimal(item.getTax().getValue());
+            bigDecimal1 = bigDecimal1.multiply(new BigDecimal(item.getQuantity()));
+            bigDecimal = bigDecimal.add(bigDecimal1);
+        }
+        return bigDecimal.stripTrailingZeros().toString();
+    }
 }

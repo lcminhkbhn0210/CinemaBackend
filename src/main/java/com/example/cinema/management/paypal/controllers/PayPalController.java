@@ -31,7 +31,6 @@ public class PayPalController {
 
     @PutMapping("/success")
     public ResponseEntity<BillResponseDTO> paymentSuccess(HttpServletRequest request){
-
         return null;
     }
 }

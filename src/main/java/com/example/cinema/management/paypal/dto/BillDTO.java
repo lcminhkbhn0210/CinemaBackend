@@ -1,6 +1,7 @@
 package com.example.cinema.management.paypal.dto;
 
 import com.example.cinema.management.model.Bill;
+import com.example.cinema.management.paypal.config.MoneyConfig;
 import com.example.cinema.management.paypal.model.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -10,6 +11,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,26 +31,27 @@ public class BillDTO {
     @JsonProperty(value = "application_context")
     private PayPalApplicationContext applicationContext;
 
-    public static BillDTO toBillDTO(Bill bill){
+
+    public static BillDTO toBillDTO(Bill bill, MoneyConfig moneyConfig){
+        PurchaseUnit purchaseUnit = PurchaseUnit.builder()
+                .items(Item.toListItem(bill.getTicketList(), bill.getBuyProducts(), moneyConfig))
+                .referenceId(bill.getVerification_code())
+                .build();
         Amount amount = Amount.builder()
-                .currencyCode("USD")
-                .value(String.valueOf(bill.getTotal()))
+                .currencyCode(moneyConfig.getCurrency())
+                .value(CurencyConverter.vndToUSD(bill.getTotal(), moneyConfig))
                 .breakDown(BreakDown.builder()
                         .itemTotal(MoneyDTO.builder()
-                                .currencyCode("USD")
-                                .value(String.valueOf(bill.getTotal()*0.95*0.05))
+                                .currencyCode(moneyConfig.getCurrency())
+                                .value(purchaseUnit.totalUnitMoney())
                                 .build())
                         .taxTotal(MoneyDTO.builder()
-                                .currencyCode("USD")
-                                .value(String.valueOf(bill.getTotal()*0.05*0.05))
+                                .currencyCode(moneyConfig.getCurrency())
+                                .value(purchaseUnit.totalTaxMoney())
                                 .build())
                         .build())
                 .build();
-        PurchaseUnit purchaseUnit = PurchaseUnit.builder()
-                .amount(amount)
-                .items(Item.toListItem(bill.getTicketList(), bill.getBuyProducts()))
-                .referenceId(bill.getVerification_code())
-                .build();
+        purchaseUnit.setAmount(amount);
         List<PurchaseUnit> purchaseUnitList = new ArrayList<>();
         purchaseUnitList.add(purchaseUnit);
         return BillDTO.builder()
