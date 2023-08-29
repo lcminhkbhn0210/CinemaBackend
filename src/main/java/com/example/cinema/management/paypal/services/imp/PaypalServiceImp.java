@@ -1,6 +1,7 @@
 package com.example.cinema.management.paypal.services.imp;
 
 import com.example.cinema.management.config.PaypalConfig;
+import com.example.cinema.management.dto.BillResponseDTO;
 import com.example.cinema.management.model.Bill;
 import com.example.cinema.management.paypal.config.MoneyConfig;
 import com.example.cinema.management.paypal.dto.BillDTO;
@@ -10,11 +11,11 @@ import com.example.cinema.management.paypal.dto.PayPalAccessTokenResponseDTO;
 import com.example.cinema.management.paypal.model.PayPalApplicationContext;
 import com.example.cinema.management.paypal.model.PaymentLandingPage;
 import com.example.cinema.management.paypal.model.PurchaseUnit;
+import com.example.cinema.management.paypal.model.Status;
 import com.example.cinema.management.paypal.services.PayPalService;
 import com.example.cinema.management.services.BillService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -28,6 +29,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
+import java.util.StringTokenizer;
 
 @Service
 @Slf4j
@@ -39,13 +41,14 @@ public class PaypalServiceImp implements PayPalService {
     private final PaypalConfig paypalConfig;
     private final ObjectMapper objectMapper;
     private final MoneyConfig moneyConfig;
-    @Autowired
-    private BillService billService;
 
-    public PaypalServiceImp(PaypalConfig paypalConfig, ObjectMapper objectMapper, MoneyConfig moneyConfig){
+    private final BillService billService;
+
+    public PaypalServiceImp(PaypalConfig paypalConfig, ObjectMapper objectMapper, MoneyConfig moneyConfig, BillService billService){
         this.paypalConfig = paypalConfig;
         this.objectMapper = objectMapper;
         this.moneyConfig = moneyConfig;
+        this.billService=billService;
         httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
@@ -76,7 +79,6 @@ public class PaypalServiceImp implements PayPalService {
             purchaseUnit.setPayee(paypalConfig.getPayee());
         }
         billDTO.setPurchaseUnits(purchaseUnits);
-        System.out.println(billDTO);
         String payload = objectMapper.writeValueAsString(billDTO);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(paypalConfig.getBaseUrl()+paypalConfig.getCheckout()))
@@ -89,10 +91,33 @@ public class PaypalServiceImp implements PayPalService {
         BillResponsePayPalDTO billResponsePayPalDTO = objectMapper.readValue(content, BillResponsePayPalDTO.class);
         if(billResponsePayPalDTO.getId()!=null){
             bill.setPaypalOrderId(billResponsePayPalDTO.getId());
-            bill.setPaypalOrderStatus("Chua thanh toan");
+            bill.setPaypalOrderStatus(Status.CREATED.name());
+            StringTokenizer tokenizer = new StringTokenizer(billResponsePayPalDTO.getLinks().get(1).getHref(),"=");
+            while (tokenizer.hasMoreTokens()){
+                bill.setPaypalToken(tokenizer.nextToken());
+            }
             billService.updateBill(bill);
         }
         return billResponsePayPalDTO;
+    }
+
+    @Override
+    public BillResponseDTO successPaymentBill(String paypalToken) throws IOException, InterruptedException {
+        Bill bill = billService.getBillByPaypalToken(paypalToken);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(paypalConfig.getOrderUrl() + paypalConfig.getCheckout() + "/" + bill.getPaypalOrderId() + "/capture"))
+                .header(HttpHeaders.AUTHORIZATION, encodeBasicCredentials())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        String content = response.body();
+        if(content!=null){
+            bill.setPaypalOrderStatus(Status.COMPLETED.name());
+            bill.setPaypalToken(null);
+            billService.updateBill(bill);
+        }
+        return BillResponseDTO.toBillResponseDTO(bill);
     }
 
     private String encodeBasicCredentials() {

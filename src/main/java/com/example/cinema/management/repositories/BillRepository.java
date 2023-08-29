@@ -7,12 +7,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Repository
 public interface BillRepository extends JpaRepository<Bill,Long> {
     @Query(value = "SELECT * FROM tbl_bill WHERE code = :code AND expire >= :current_date", nativeQuery = true)
     Bill findByVerification_code(@Param("code") String code, @Param("current_date") Date date);
-
     Bill findByPaypalOrderId(String id);
-
+    Optional<Bill> findByPaypalToken(String token);
 }

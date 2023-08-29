@@ -29,8 +29,8 @@ public class PayPalController {
         return new ResponseEntity<>(payPalService.createBill(billPayPalRequestDTO), HttpStatus.CREATED);
     }
 
-    @PutMapping("/success")
-    public ResponseEntity<BillResponseDTO> paymentSuccess(HttpServletRequest request){
-        return null;
+    @GetMapping("/success")
+    public ResponseEntity<BillResponseDTO> paymentSuccess(@RequestParam("token") String token) throws IOException, InterruptedException {
+        return new ResponseEntity<>(payPalService.successPaymentBill(token),HttpStatus.OK);
     }
 }

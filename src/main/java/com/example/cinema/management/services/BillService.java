@@ -18,4 +18,5 @@ public interface BillService {
     BillResponseDTO getBillByCode(String code);
     Bill createBillPayPal(BillPayPalRequestDTO billPayPalRequestDTO);
     Bill updateBill(Bill bill);
+    Bill getBillByPaypalToken(String token);
 }

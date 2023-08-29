@@ -43,11 +43,11 @@ public class Item {
                     .quantity("1")
                     .unitMoneyDTO(MoneyDTO.builder()
                             .currencyCode(moneyConfig.getCurrency())
-                            .value(CurencyConverter.vndToUSD(ticket.getPrice() * (1-moneyConfig.getFee()),moneyConfig))
+                            .value(new BigDecimal(CurencyConverter.vndToUSD(ticket.getPrice() * (1-moneyConfig.getFee()),moneyConfig)).setScale(2, RoundingMode.CEILING).toString())
                             .build())
                     .tax(MoneyDTO.builder()
                             .currencyCode(moneyConfig.getCurrency())
-                            .value(CurencyConverter.vndToUSD(ticket.getPrice() * moneyConfig.getFee(), moneyConfig))
+                            .value(new BigDecimal(CurencyConverter.vndToUSD(ticket.getPrice() * moneyConfig.getFee(), moneyConfig)).setScale(2,RoundingMode.DOWN).toString())
                             .build())
                     .build();
             items.add(item);
