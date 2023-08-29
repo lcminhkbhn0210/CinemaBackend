@@ -31,4 +31,6 @@ public class PaypalConfig {
     private String cancelUrl;
     @NotEmpty
     private Payee payee;
+    @NotEmpty
+    private String orderUrl;
 }
