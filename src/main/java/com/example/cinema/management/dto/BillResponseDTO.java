@@ -28,13 +28,12 @@ public class BillResponseDTO extends Message {
     }
 
     public static BillResponseDTO toBillResponseDTO(Bill bill){
-        BillResponseDTO billResponseDTO = BillResponseDTO.builder()
+        return BillResponseDTO.builder()
                 .code(bill.getVerification_code())
                 .products(bill.getBuyProducts())
                 .sell_date(bill.getSellDate())
                 .tickets(bill.getTicketList())
                 .total(bill.getTotal())
                 .build();
-        return billResponseDTO;
     }
 }

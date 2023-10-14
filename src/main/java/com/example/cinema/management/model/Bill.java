@@ -57,4 +57,6 @@ public class Bill {
     private String paypalOrderId;
     @Column(name = "paypal_order_status")
     private String paypalOrderStatus;
+    @Column(name = "paypal_token")
+    private String paypalToken;
 }
