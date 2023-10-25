@@ -94,6 +94,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
             );
             String token = tokenService.generateJwt(auth);
             User u = userRepository.getUserByUsername(loginRequestDto.getUsername());
+            u.setAuthorities(roleRepository.findAllByUserId(u.getId()));
             if(u.isStatus())
                 return new LoginResponseDTO(UserLoginDTO.toUserDTO(u),token,"Dang nhap thanh cong");
             else
