@@ -47,7 +47,7 @@ public class FilmServiceImp implements FilmService {
 
     @Override
     public List<Film> getAllFilm() {
-        return filmRepository.findAll(PageRequest.of(0,10, Sort.by("created").descending())).getContent();
+        return filmRepository.findAll();
     }
 
     @Override

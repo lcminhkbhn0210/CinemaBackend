@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/film")
+@CrossOrigin("http://localhost:3000")
 public class FilmController {
 
     @Autowired

@@ -9,7 +9,7 @@ import com.example.cinema.management.repositories.FilmRoomRepository;
 import com.example.cinema.management.repositories.ShowTimesRepository;
 import com.example.cinema.management.services.ShowTimesService;
 import com.example.cinema.management.services.TicketService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -19,16 +19,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ShowTimesServiceImp implements ShowTimesService {
 
-    @Autowired
-    private ShowTimesRepository showTimesRepository;
-    @Autowired
-    private FilmRepository filmRepository;
-    @Autowired
-    private FilmRoomRepository filmRoomRepository;
-    @Autowired
-    private TicketService ticketService;
+
+    private final ShowTimesRepository showTimesRepository;
+
+    private final FilmRepository filmRepository;
+
+    private final FilmRoomRepository filmRoomRepository;
+
+    private final TicketService ticketService;
     @Override
     public ShowTimesResponseDTO createShowTimes(ShowTimesRequestDTO showTimesRequestDTO) throws ParseException {
         Date date = new Date();

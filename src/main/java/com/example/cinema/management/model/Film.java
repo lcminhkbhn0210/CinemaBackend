@@ -48,4 +48,7 @@ public class Film {
     @ToString.Exclude
     private List<ShowTimes> showtimes;
 
+    @ManyToOne
+    @JoinColumn(name = "filmProvider_id")
+    private FilmProvider filmProvider;
 }
