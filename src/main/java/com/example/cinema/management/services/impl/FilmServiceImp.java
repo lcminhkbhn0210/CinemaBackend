@@ -42,6 +42,8 @@ public class FilmServiceImp implements FilmService {
         filmExist.setRate(film.getRate());
         filmExist.setDirectory(film.getDirectory());
         filmExist.setCreated(film.getCreated());
+        filmExist.setFilmProvider(film.getFilmProvider());
+        filmExist.setFilmRating(film.getFilmRating());
         return filmRepository.save(filmExist);
     }
 

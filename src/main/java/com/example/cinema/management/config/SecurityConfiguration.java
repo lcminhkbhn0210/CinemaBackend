@@ -1,6 +1,7 @@
 package com.example.cinema.management.config;
 
 
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.BufferedImageHttpMessageConverter;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
 
 import java.awt.image.BufferedImage;
 
@@ -41,8 +43,8 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
                 .csrf(csrf -> csrf.disable())
+                .cors().and()
                 .authorizeRequests( auth ->{
-                    auth.requestMatchers("/**").permitAll();
                     auth.requestMatchers("/auth/**").permitAll();
                     auth.requestMatchers("/swagger-ui/**",
                             "/v3/api-docs/**",
@@ -67,5 +69,6 @@ public class SecurityConfiguration {
     public HttpMessageConverter<BufferedImage> createImagehttpMessageConverter() {
         return new BufferedImageHttpMessageConverter();
     }
+
 
 }
