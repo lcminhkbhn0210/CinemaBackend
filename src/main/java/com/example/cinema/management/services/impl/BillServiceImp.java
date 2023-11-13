@@ -56,14 +56,9 @@ public class BillServiceImp implements BillService {
     }
 
     @Override
-    public List<BillResponseDTO> getAllBill() {
-        Page<Bill> billPage = billRepository.findAll(PageRequest.of(0,10));
-        List<Bill> bills = billPage.stream().toList();
-        List<BillResponseDTO> billResponseDTOS = new ArrayList<>();
-        for(Bill bill:bills){
-            billResponseDTOS.add(BillResponseDTO.toBillResponseDTO(bill));
-        }
-        return billResponseDTOS;
+    public List<Bill> getAllBill() {
+        List<Bill> bills = billRepository.findAll();
+        return bills;
     }
 
     @Override

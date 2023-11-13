@@ -46,6 +46,7 @@ public class ShowTimesServiceImp implements ShowTimesService {
         showTimes.setTimeend(date);
         boolean check = true;
         for(ShowTimes s:showTimesList){
+
             int start_start = s.getTimestart().compareTo(showTimes.getTimestart());
             int end_end = s.getTimeend().compareTo(showTimes.getTimeend());
             int start_end = s.getTimestart().compareTo(showTimes.getTimeend());
@@ -121,5 +122,10 @@ public class ShowTimesServiceImp implements ShowTimesService {
             show.setFilmRoom(filmRoom);
         }
         return showTimes;
+    }
+
+    @Override
+    public List<ShowTimes> getAllShowTimes() {
+        return showTimesRepository.findAll();
     }
 }

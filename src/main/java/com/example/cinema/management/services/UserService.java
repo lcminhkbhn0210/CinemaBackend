@@ -23,4 +23,8 @@ public interface UserService {
     User updateEmployee(Employee employee, long id);
 
     String verifyUser(String code);
+
+    List<User> getAllUser();
+
+    String getNameByUserId(long userId);
 }

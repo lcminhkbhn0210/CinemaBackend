@@ -39,7 +39,7 @@ public class ProductController {
         return new ResponseEntity<>(productService.getProductById(id),HttpStatus.OK);
     }
 
-    @GetMapping("")
+    @GetMapping("/name")
     @ResponseStatus(HttpStatus.OK)
     public List<Product> getProductByName(@RequestParam String name){
         return productService.getListProductByName(name);
@@ -48,5 +48,10 @@ public class ProductController {
     @PostMapping("/buyProducts")
     public List<BuyProduct> createBuyProduct(@RequestBody List<BuyProductDTO> buyProductDTOS){
         return productService.createBuyProducts(buyProductDTOS);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<Product>> getAllProduct(){
+        return new ResponseEntity<>(productService.getAllProduct(), HttpStatus.OK);
     }
 }

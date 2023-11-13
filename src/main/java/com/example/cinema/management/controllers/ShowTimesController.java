@@ -27,7 +27,7 @@ public class ShowTimesController {
     }
 
     @PostMapping("")
-    public ResponseEntity<ShowTimesResponseDTO> test(@RequestBody ShowTimesRequestDTO showTimesRequestDTO) throws ParseException {
+    public ResponseEntity<ShowTimesResponseDTO> createShowTimes(@RequestBody ShowTimesRequestDTO showTimesRequestDTO) throws ParseException {
         return new ResponseEntity<>(showTimesService.createShowTimes(showTimesRequestDTO),HttpStatus.CREATED);
     }
 
@@ -36,8 +36,12 @@ public class ShowTimesController {
         showTimesService.deleteShowTimes(id);
         return new ResponseEntity<>("Xoa Thanh Cong",HttpStatus.OK);
     }
-    @GetMapping("")
+    @GetMapping("/day")
     public List<ShowTimes> getShowTimesByDay(@RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") Date date) throws ParseException {
         return showTimesService.getShowTimesByDay(date);
+    }
+    @GetMapping
+    public ResponseEntity<List<ShowTimes>> getAllShowTimes(){
+        return new ResponseEntity<>(showTimesService.getAllShowTimes(), HttpStatus.OK);
     }
 }

@@ -31,6 +31,8 @@ public class UserServiceImp implements UserService, UserDetailsService {
     private RoleRepository roleRepository;
 
 
+
+
     public UserServiceImp(UserRepository userRepository) {
         super();
         this.userRepository = userRepository;
@@ -137,6 +139,23 @@ public class UserServiceImp implements UserService, UserDetailsService {
             userRepository.save(user);
             return "Xac thuc thanh cong";
         }
+    }
+
+    @Override
+    public List<User> getAllUser() {
+        List<User> users = userRepository.findAll();
+        for(int i=0; i< users.size(); i++){
+
+        }
+        return users;
+    }
+
+    @Override
+    public String getNameByUserId(long userId) {
+        if(userRepository.findById(userId).isPresent()){
+            return userRepository.findById(userId).get().getName();
+        }
+        return "Khong ton tai user";
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.util.List;
 public interface BillService {
     Message deletebill(long id);
     BillResponseDTO getBillById(long id);
-    List<BillResponseDTO> getAllBill();
+    List<Bill> getAllBill();
     BillResponseDTO createBillOffLine(BillRequestDTO billRequestDTO);
     BillResponseDTO checkExpireBill(BillRequestDTO billRequestDTO);
     double caculatedPrice(Bill bill);

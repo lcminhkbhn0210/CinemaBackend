@@ -63,7 +63,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
             customer.setType(Type.CUSTOMER);
             customer.setStatus(false);
             customer.setName(registerRequestDto.getName());
-            customer.setPhonenumber(registerRequestDto.getPhonenumber());
+            customer.setPhoneNumber(registerRequestDto.getPhonenumber());
             String randomCode = RandomStringUtils.randomAlphabetic(64);
             customer.setVerificationCode(randomCode);
             customer.setEmail(registerRequestDto.getEmail());

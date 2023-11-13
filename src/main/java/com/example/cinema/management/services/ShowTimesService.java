@@ -16,4 +16,6 @@ public interface ShowTimesService {
     ShowTimes getShowTimesById(long id);
     List<ShowTimes> getListShowTimesByFilmId(long id, Date date);
 
+    List<ShowTimes> getAllShowTimes();
+
 }

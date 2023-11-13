@@ -2,6 +2,7 @@ package com.example.cinema.management.controllers;
 
 import com.example.cinema.management.dto.BillRequestDTO;
 import com.example.cinema.management.dto.BillResponseDTO;
+import com.example.cinema.management.model.Bill;
 import com.example.cinema.management.model.Message;
 import com.example.cinema.management.services.BillService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,8 @@ public class BillController {
         return new ResponseEntity<>(billService.getBillById(id),HttpStatus.OK);
     }
 
-    @GetMapping("/bills")
-    public List<BillResponseDTO> getAllBill(){
+    @GetMapping("")
+    public List<Bill> getAllBill(){
         return billService.getAllBill();
     }
 
@@ -37,7 +38,7 @@ public class BillController {
         return new ResponseEntity<>(billService.deletebill(id),HttpStatus.OK);
     }
 
-    @GetMapping("")
+    @GetMapping("/code")
     @ResponseStatus(HttpStatus.OK)
     public BillResponseDTO getBillByCode(@RequestParam("code") String code){
         return billService.getBillByCode(code);

@@ -1,6 +1,7 @@
 package com.example.cinema.management.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,12 +28,14 @@ public class User implements UserDetails {
     private String username;
 
     @Column(name = "password",nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(name = "name")
     private String name;
 
     @Column(name = "status", columnDefinition = "BOOLEAN DEFAULT FALSE", length = 2)
+    @JsonIgnore
     private boolean status;
 
     @Column(name = "type")
@@ -48,7 +51,9 @@ public class User implements UserDetails {
     private Set<Role> authorities;
     private String email;
     @Column(name = "verification_code",length = 64)
+    @JsonIgnore
     private String verificationCode;
+    private String phoneNumber;
 
     public User(long id, String name, String encode, Set<Role> roles) {
         this.id = id;
@@ -63,21 +68,25 @@ public class User implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return true;
     }

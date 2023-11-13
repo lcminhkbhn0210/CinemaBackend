@@ -31,6 +31,8 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
+
+
     @Bean
     public AuthenticationManager authenticationManager(UserDetailsService detailsService){
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
@@ -45,6 +47,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .cors().and()
                 .authorizeRequests( auth ->{
+                    auth.requestMatchers("/**").permitAll();
                     auth.requestMatchers("/auth/**").permitAll();
                     auth.requestMatchers("/swagger-ui/**",
                             "/v3/api-docs/**",

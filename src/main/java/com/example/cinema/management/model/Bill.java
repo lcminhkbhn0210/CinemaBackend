@@ -1,6 +1,7 @@
 package com.example.cinema.management.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,9 +22,12 @@ public class Bill {
     private long id;
     private double total;
     private Date sellDate;
+    @JsonIgnore
     private String note;
     @Column(name = "code", unique = true, length = 16)
+    @JsonIgnore
     private String verification_code;
+    @JsonIgnore
     private Date expire;
 
     @ManyToOne
@@ -41,16 +45,19 @@ public class Bill {
     @OneToMany(mappedBy = "bill",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private List<Ticket> ticketList;
 
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private List<BuyProduct> buyProducts;
 
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private List<GiftedProduct> giftedProducts;
 
     @Column(name = "paypal_order_id")
@@ -58,5 +65,6 @@ public class Bill {
     @Column(name = "paypal_order_status")
     private String paypalOrderStatus;
     @Column(name = "paypal_token")
+    @JsonIgnore
     private String paypalToken;
 }

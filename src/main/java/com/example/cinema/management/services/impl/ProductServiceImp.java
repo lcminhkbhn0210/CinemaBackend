@@ -110,5 +110,10 @@ public class ProductServiceImp implements ProductService {
         return buyProductRepository.saveAll(buyProducts);
     }
 
+    @Override
+    public List<Product> getAllProduct() {
+        return productRepository.findAll();
+    }
+
 
 }

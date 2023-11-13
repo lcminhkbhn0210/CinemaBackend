@@ -17,4 +17,6 @@ public interface ProductService {
     Product getProductById(long id);
 
     List<BuyProduct> createBuyProducts(List<BuyProductDTO> buyProductDTOS);
+
+    List<Product> getAllProduct();
 }
