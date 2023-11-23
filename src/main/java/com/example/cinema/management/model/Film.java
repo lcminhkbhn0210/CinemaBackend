@@ -39,6 +39,18 @@ public class Film {
     @Column(name = "link_img", length = 2000)
     private String img;
 
+    @Column(name = "title_img", length = 2000)
+    private String titleImg;
+
+    @Column(name = "bg_img", length = 2000)
+    private String bgImg;
+
+    @Column(name = "active", columnDefinition = "BOOLEAN DEFAULT FALSE", length = 2)
+    private boolean active;
+
+    @Column(length = 2000)
+    private String trailer;
+
     private Date created;
     @Enumerated(EnumType.STRING)
     private FilmRating filmRating;
