@@ -54,6 +54,9 @@ public class User implements UserDetails {
     @JsonIgnore
     private String verificationCode;
     private String phoneNumber;
+    @ManyToOne()
+    @JoinColumn(name = "cinemaId")
+    private Cinema cinema;
 
     public User(long id, String name, String encode, Set<Role> roles) {
         this.id = id;

@@ -7,6 +7,7 @@ import com.example.cinema.management.model.BuyProduct;
 import com.example.cinema.management.model.Message;
 import com.example.cinema.management.model.Ticket;
 import com.example.cinema.management.paypal.dto.BillPayPalRequestDTO;
+import com.example.cinema.management.repositories.TicketRepository;
 import com.example.cinema.management.services.TicketService;
 import com.example.cinema.management.repositories.BillRepository;
 import com.example.cinema.management.repositories.BuyProductRepository;
@@ -33,6 +34,8 @@ public class BillServiceImp implements BillService {
     private BuyProductRepository buyProductRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TicketRepository ticketRepository;
     @Override
     public Message deletebill(long id) {
         if(billRepository.findById(id).isPresent()){
@@ -135,7 +138,7 @@ public class BillServiceImp implements BillService {
         Bill bill = new Bill();
         List<Ticket> tickets = new ArrayList<>();
         List<BuyProduct> buyProducts = new ArrayList<>();
-
+        bill = billRepository.save(bill);
         for(Long ticket_id:billPayPalRequestDTO.getListTicketId()){
             Ticket ticket = ticketService.updateTicket(ticket_id);
             ticket.setBill(bill);

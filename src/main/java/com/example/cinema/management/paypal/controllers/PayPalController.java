@@ -5,6 +5,7 @@ import com.example.cinema.management.model.Bill;
 import com.example.cinema.management.paypal.dto.BillDTO;
 import com.example.cinema.management.paypal.dto.BillPayPalRequestDTO;
 import com.example.cinema.management.paypal.dto.BillResponsePayPalDTO;
+import com.example.cinema.management.paypal.model.PaypalResponse;
 import com.example.cinema.management.paypal.model.QRCodeGenerator;
 import com.example.cinema.management.paypal.services.PayPalService;
 import com.example.cinema.management.repositories.BillRepository;
@@ -33,7 +34,7 @@ public class PayPalController {
     }
 
     @GetMapping("/success")
-    public ResponseEntity<BillResponseDTO> paymentSuccess(@RequestParam("token") String token) throws IOException, InterruptedException {
+    public ResponseEntity<PaypalResponse> paymentSuccess(@RequestParam("token") String token) throws IOException, InterruptedException {
         return new ResponseEntity<>(payPalService.successPaymentBill(token),HttpStatus.OK);
     }
 

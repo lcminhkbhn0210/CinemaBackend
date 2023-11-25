@@ -24,4 +24,8 @@ public class Product {
     private int amount;
     @Column(length = 2000)
     private String img;
+
+    @ManyToOne()
+    @JoinColumn(name = "cinemaId")
+    private Cinema cinema;
 }

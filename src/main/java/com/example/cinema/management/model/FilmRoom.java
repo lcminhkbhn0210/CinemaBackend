@@ -38,4 +38,8 @@ public class FilmRoom  {
     @Column(unique = true)
     private String name;
 
+    @ManyToOne()
+    @JoinColumn(name = "cinemaId")
+    private Cinema cinema;
+
 }

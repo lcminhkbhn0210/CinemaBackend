@@ -1,6 +1,7 @@
 package com.example.cinema.management.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
@@ -58,6 +59,7 @@ public class Film {
     @OneToMany(mappedBy = "film", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private List<ShowTimes> showtimes;
 
     @ManyToOne

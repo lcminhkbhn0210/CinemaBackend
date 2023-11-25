@@ -3,16 +3,14 @@ package com.example.cinema.management.paypal.services.imp;
 import com.example.cinema.management.config.PaypalConfig;
 import com.example.cinema.management.dto.BillResponseDTO;
 import com.example.cinema.management.model.Bill;
+import com.example.cinema.management.model.ShowTimes;
+import com.example.cinema.management.model.Ticket;
 import com.example.cinema.management.paypal.config.MoneyConfig;
-import com.example.cinema.management.paypal.dto.BillDTO;
-import com.example.cinema.management.paypal.dto.BillPayPalRequestDTO;
-import com.example.cinema.management.paypal.dto.BillResponsePayPalDTO;
-import com.example.cinema.management.paypal.dto.PayPalAccessTokenResponseDTO;
-import com.example.cinema.management.paypal.model.PayPalApplicationContext;
-import com.example.cinema.management.paypal.model.PaymentLandingPage;
-import com.example.cinema.management.paypal.model.PurchaseUnit;
-import com.example.cinema.management.paypal.model.Status;
+import com.example.cinema.management.paypal.dto.*;
+import com.example.cinema.management.paypal.model.*;
 import com.example.cinema.management.paypal.services.PayPalService;
+import com.example.cinema.management.repositories.ShowTimesRepository;
+import com.example.cinema.management.repositories.TicketRepository;
 import com.example.cinema.management.services.BillService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +34,8 @@ import java.util.StringTokenizer;
 public class PaypalServiceImp implements PayPalService {
     @Value(value = "${base.Url}")
     private String baseUrl;
+    @Value(value = "${base.FeUrl}")
+    private String baseFeUrl;
 
     private final HttpClient httpClient;
     private final PaypalConfig paypalConfig;
@@ -43,12 +43,16 @@ public class PaypalServiceImp implements PayPalService {
     private final MoneyConfig moneyConfig;
 
     private final BillService billService;
+    private final TicketRepository ticketRepository;
+    private final ShowTimesRepository showTimesRepository;
 
-    public PaypalServiceImp(PaypalConfig paypalConfig, ObjectMapper objectMapper, MoneyConfig moneyConfig, BillService billService){
+    public PaypalServiceImp(PaypalConfig paypalConfig, ObjectMapper objectMapper, MoneyConfig moneyConfig, BillService billService, TicketRepository ticketRepository, ShowTimesRepository showTimesRepository){
         this.paypalConfig = paypalConfig;
         this.objectMapper = objectMapper;
         this.moneyConfig = moneyConfig;
         this.billService=billService;
+        this.ticketRepository = ticketRepository;
+        this.showTimesRepository = showTimesRepository;
         httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
@@ -102,7 +106,7 @@ public class PaypalServiceImp implements PayPalService {
     }
 
     @Override
-    public BillResponseDTO successPaymentBill(String paypalToken) throws IOException, InterruptedException {
+    public PaypalResponse successPaymentBill(String paypalToken) throws IOException, InterruptedException {
         Bill bill = billService.getBillByPaypalToken(paypalToken);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(paypalConfig.getOrderUrl() + paypalConfig.getCheckout() + "/" + bill.getPaypalOrderId() + "/capture"))
@@ -114,10 +118,9 @@ public class PaypalServiceImp implements PayPalService {
         String content = response.body();
         if(content!=null){
             bill.setPaypalOrderStatus(Status.COMPLETED.name());
-            bill.setPaypalToken(null);
             billService.updateBill(bill);
         }
-        return BillResponseDTO.toBillResponseDTO(bill);
+        return createPaypalResponse(bill);
     }
 
     private String encodeBasicCredentials() {
@@ -128,9 +131,23 @@ public class PaypalServiceImp implements PayPalService {
     private PayPalApplicationContext createAppContext(){
         return PayPalApplicationContext.builder()
                 .brandName(paypalConfig.getBrandName())
-                .cancelUrl(baseUrl+paypalConfig.getCancelUrl())
-                .returnUrl(baseUrl+paypalConfig.getReturnUrl())
+                .cancelUrl(baseFeUrl+paypalConfig.getCancelUrl())
+                .returnUrl(baseFeUrl+paypalConfig.getReturnUrl())
                 .landingPage(PaymentLandingPage.BILLING)
                 .build();
+    }
+
+    private PaypalResponse createPaypalResponse(Bill bill){
+        PaypalResponse paypalResponse = new PaypalResponse();
+        if(bill.getTicketList().size()>0){
+            Ticket ticket = ticketRepository.findById(bill.getTicketList().get(0).getId()).get();
+            ShowTimes showTimes = showTimesRepository.findById(ticket.getShowTimes().getId()).get();
+            paypalResponse.setCode(bill.getVerification_code());
+            paypalResponse.setDateEnd(showTimes.getTimeend());
+            paypalResponse.setDateStart(showTimes.getTimestart());
+            paypalResponse.setCinema("Ha Nam");
+            paypalResponse.setFilmName(showTimes.getFilm().getName());
+        }
+        return paypalResponse;
     }
 }

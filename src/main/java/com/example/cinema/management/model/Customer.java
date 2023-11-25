@@ -26,4 +26,8 @@ public class Customer extends User{
     @JsonIgnore
     private List<Bill> bills;
 
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<VoucherCustomer> voucherCustomers;
+
 }
